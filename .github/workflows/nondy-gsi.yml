@@ -3,9 +3,9 @@ name: Building GSI..
 on: [push]
 
 env:
-  ROM_URL: 
-  ROM_NAME: OxygenOS
-  ZIP_NAME: Oxygen-test
+  ROM_URL: https://dropmirror.bahacec.workers.dev/0://PixelAirOS_pine-12.0-20220206-1059-OFFICIAL.zip
+  ROM_NAME: Pixel
+  ZIP_NAME: PixelAirOS_pine-12.0-20220206-1059-OFFICIAL.zip
   TZ: Asia/Kolkata
 jobs:
   build:
@@ -31,7 +31,7 @@ jobs:
 
        
        - name: Clone ErfanGSI Source Code
-         run: git clone --recurse-submodules https://github.com/Area69Lab/ErfanGSIs
+         run: git clone --recurse-submodules https://github.com/flashokillerify/ErfanGSIs
        
        - name: Setting up ErfanGSI requirements
          run: |
@@ -42,27 +42,6 @@ jobs:
        - name: Download Stock Rom & Generate GSI
          run: sudo ./ErfanGSIs/url2GSI.sh $ROM_URL $ROM_NAME
        
-       - name: Zip Aonly and upload 
-         run: |
-              mkdir final
-              sudo chmod -R 777 ErfanGSIs/output
-              cd ErfanGSIs/output
-              7z a $ZIP_NAME-GSI-Aonly.7z *-Aonly-*.img
-              expect -c " 
-              spawn sftp ${{ secrets.SFUSER }}@frs.sourceforge.net
-              expect \"yes/no\"
-              send \"yes\r\"
-              expect \"Password\"        
-              send \"${{ secrets.SFPASS }}\r\"
-              expect \"sftp> \"
-              send \"cd ${{ secrets.SFDIR }}\r\"
-              set timeout -1
-              send \"put $ZIP_NAME-GSI-Aonly.7z\r\"
-              expect \"Uploading\"
-              expect \"100%\"
-              expect \"sftp>\"
-              send \"bye\r\"
-              interact"      
        - name: Zip AB and upload 
          run: |
               cd ErfanGSIs/output
